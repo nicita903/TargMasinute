@@ -1,6 +1,5 @@
-﻿namespace NivelEntitati
+﻿namespace LibrarieModele
 {
-    // Enum simplu pentru culoare
     public enum CuloareMasina
     {
         Rosu,
@@ -11,7 +10,6 @@
         Verde
     }
 
-    // Enum cu atribut [Flags] pentru optiuni (permite combinatii)
     [Flags]
     public enum OptiuniMasina
     {
