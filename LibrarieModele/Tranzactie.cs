@@ -7,9 +7,9 @@ namespace LibrarieModele
         private const char SEPARATOR_PRINCIPAL_FISIER = '|';
 
         public int Id { get; set; }
-        public Persoana Vanzator { get; set; } = new Persoana();  // Initializat direct
-        public Persoana Cumparator { get; set; } = new Persoana(); // Initializat direct
-        public Masina Masina { get; set; } = new Masina();         // Initializat direct
+        public Persoana Vanzator { get; set; } = new Persoana("");
+        public Persoana Cumparator { get; set; } = new Persoana("");
+        public Masina Masina { get; set; } = new Masina();
         public DateTime DataTranzactie { get; set; }
         public decimal Pret { get; set; }
 
@@ -67,6 +67,14 @@ namespace LibrarieModele
         public string DataTranzactieShort
         {
             get { return DataTranzactie.ToString("yyyy-MM-dd"); }
+        }
+
+        public string DescriereScurta
+        {
+            get
+            {
+                return $"#{Id} - {Masina?.NumeFirma} {Masina?.Model} - {Vanzator?.Nume}";
+            }
         }
     }
 }

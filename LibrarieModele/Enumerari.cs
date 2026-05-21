@@ -2,12 +2,26 @@
 {
     public enum CuloareMasina
     {
-        Rosu,
         Alb,
         Negru,
-        Albastru,
         Gri,
-        Verde
+        Argintiu,
+        Rosu,
+        Bordo,
+        Albastru,
+        Bleumarin,
+        Verde,
+        VerdeInchis,
+        Galben,
+        Portocaliu,
+        Maro,
+        Bej,
+        Auriu,
+        Mov,
+        Roz,
+        Turcoaz,
+        Cameleon,
+        Mat
     }
 
     [Flags]

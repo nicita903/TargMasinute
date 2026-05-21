@@ -11,6 +11,7 @@ namespace LibrarieModele
         public string Model { get; set; } = string.Empty;      // Adaugat = string.Empty
         public int AnFabricatie { get; set; }
         public CuloareMasina Culoare { get; set; }
+        public string Combustibil { get; set; } = "Benzină"; 
         public OptiuniMasina Optiuni { get; set; }
 
         public Masina()

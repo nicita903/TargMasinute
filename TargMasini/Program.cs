@@ -5,7 +5,7 @@ namespace TargMasini
 {
     class Program
     {
-        private static IStocareData admin;
+        private static IStocareData? admin;
 
         static void Main(string[] args)
         {
