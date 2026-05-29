@@ -1,5 +1,3 @@
-using LibrarieModele;
-using NivelStocareDate;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -10,7 +8,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
+using LibrarieModele;
+using NivelStocareDate;
 
 namespace TargMasiniWPF
 {
@@ -53,8 +52,6 @@ namespace TargMasiniWPF
             }
         }
 
-        public object IconImage { get; }
-
         public event PropertyChangedEventHandler? PropertyChanged;
 
         private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
@@ -77,20 +74,6 @@ namespace TargMasiniWPF
         public MainWindow()
         {
             InitializeComponent();
-
-            Image img = this.FindName("IconImage") as Image;
-            if (img != null)
-            {
-                string iconPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images", "icon.png");
-                if (File.Exists(iconPath))
-                {
-                    BitmapImage bitmap = new BitmapImage(new Uri(iconPath, UriKind.Absolute));
-                    img.Source = bitmap;
-                }
-            }
-
-
-
 
             string caleFisier = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory),
