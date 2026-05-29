@@ -354,23 +354,9 @@
                             Click="NavModifica_Click"
                             Style="{StaticResource MenuButton}"/>
 
-                    <Button Name="BtnNavPersoane"
-                            Content="Persoane CRUD"
-                            Click="NavPersoane_Click"
-                            Style="{StaticResource MenuButton}"/>
                 </StackPanel>
 
-                <StackPanel Grid.Row="2">
-                    <Button Content="—  Minimizează"
-                            Click="BtnMinimize_Click"
-                            Style="{StaticResource MenuButton}"/>
-
-                    <Button Content="Închide"
-                            Click="BtnClose_Click"
-                            Style="{StaticResource MenuButton}"
-                            Background="#3B0A19"
-                            BorderBrush="#7F1D1D"/>
-                </StackPanel>
+                
             </Grid>
         </Border>
 
@@ -758,259 +744,59 @@
                 </StackPanel>
             </Grid>
             <Grid Name="PaginaModifica" Visibility="Collapsed">
-
                 <ScrollViewer Margin="30">
-
-                    <Border Background="#172033"
-                BorderBrush="#334155"
-                BorderThickness="1"
-                CornerRadius="28"
-                Padding="34"
-                MaxWidth="760"
-                HorizontalAlignment="Left">
-
+                    <Border Background="#172033" BorderBrush="#334155" BorderThickness="1" CornerRadius="28" Padding="34" MaxWidth="760" HorizontalAlignment="Left">
                         <StackPanel>
+                            <TextBlock Text="Modifică tranzacție" FontSize="32" FontWeight="Bold" Foreground="{StaticResource TextMain}"/>
+                            <TextBlock Text="Caută o tranzacție după model mașină sau nume cumpărător, apoi selectează din listă." FontSize="14" Foreground="{StaticResource TextMuted}" Margin="0,7,0,24"/>
 
-                            <TextBlock Text="Modifică tranzacție"
-                           FontSize="32"
-                           FontWeight="Bold"
-                           Foreground="{StaticResource TextMain}"/>
+                            <!-- Zona de căutare -->
+                            <Label Content="Caută tranzacția de modificat" Style="{StaticResource InputLabel}"/>
+                            <Grid Margin="0,0,0,22">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBox Name="txtCautaModifica" Grid.Column="0" Style="{StaticResource Input}" ToolTip="Caută după model mașină sau nume cumpărător"/>
+                                <Button Grid.Column="1" Content="Caută" Click="BtnCautaTranzactiiModifica_Click" Style="{StaticResource PrimaryButton}" Margin="8,0,0,0" Width="80"/>
+                            </Grid>
 
-                            <TextBlock Text="Selectează o tranzacție și modifică datele."
-                           FontSize="14"
-                           Foreground="{StaticResource TextMuted}"
-                           Margin="0,7,0,24"/>
+                            <!-- Lista rezultate căutare -->
+                            <Label Content="Rezultate căutare" Style="{StaticResource InputLabel}"/>
+                            <ListBox Name="lstRezultateModifica" Height="140" Background="#0F172A" Foreground="White" BorderBrush="#334155" SelectionChanged="lstRezultateModifica_SelectionChanged" DisplayMemberPath="DescriereScurta" Margin="0,0,0,22"/>
 
-                            <!-- COMBOBOX -->
+                            <!-- Restul câmpurilor de editare (rămân neschimbate) -->
+                            <Label Content="Vânzător" Style="{StaticResource InputLabel}"/>
+                            <TextBox Name="txtVanzatorModifica" Style="{StaticResource Input}" Margin="0,0,0,22"/>
 
-                            <Label Content="Selectează tranzacția"
-                       Style="{StaticResource InputLabel}"/>
+                            <Label Content="Cumpărător" Style="{StaticResource InputLabel}"/>
+                            <TextBox Name="txtCumparatorModifica" Style="{StaticResource Input}" Margin="0,0,0,22"/>
 
-                            <ComboBox Name="cboTranzactiiModifica"
-                          Style="{StaticResource Combo}"
-                          SelectionChanged="cboTranzactiiModifica_SelectionChanged"
-                          Margin="0,0,0,22"/>
+                            <Label Content="Marca mașinii" Style="{StaticResource InputLabel}"/>
+                            <TextBox Name="txtFirmaModifica" Style="{StaticResource Input}" Margin="0,0,0,22"/>
 
-                            <!-- VANZATOR -->
+                            <Label Content="Model" Style="{StaticResource InputLabel}"/>
+                            <TextBox Name="txtModelModifica" Style="{StaticResource Input}" Margin="0,0,0,22"/>
 
-                            <Label Content="Vânzător"
-                       Style="{StaticResource InputLabel}"/>
+                            <Label Content="An fabricație" Style="{StaticResource InputLabel}"/>
+                            <TextBox Name="txtAnModifica" Style="{StaticResource Input}" Margin="0,0,0,22"/>
 
-                            <TextBox Name="txtVanzatorModifica"
-                         Style="{StaticResource Input}"
-                         Margin="0,0,0,22"/>
+                            <Label Content="Preț" Style="{StaticResource InputLabel}"/>
+                            <TextBox Name="txtPretModifica" Style="{StaticResource Input}" Margin="0,0,0,22"/>
 
-                            <!-- CUMPARATOR -->
+                            <Label Content="Data tranzacției" Style="{StaticResource InputLabel}"/>
+                            <DatePicker Name="dpDataModifica" Height="42" Margin="0,0,0,22"/>
 
-                            <Label Content="Cumpărător"
-                       Style="{StaticResource InputLabel}"/>
+                            <Label Content="Dotări" Style="{StaticResource InputLabel}"/>
+                            <ListBox Name="lstDotariModifica" Height="160" SelectionMode="Multiple" Background="#0F172A" Foreground="White" BorderBrush="#334155" Margin="0,0,0,24"/>
 
-                            <TextBox Name="txtCumparatorModifica"
-                         Style="{StaticResource Input}"
-                         Margin="0,0,0,22"/>
-
-                            <!-- MARCA -->
-
-                            <Label Content="Marca mașinii"
-                       Style="{StaticResource InputLabel}"/>
-
-                            <TextBox Name="txtFirmaModifica"
-                         Style="{StaticResource Input}"
-                         Margin="0,0,0,22"/>
-
-                            <!-- MODEL -->
-
-                            <Label Content="Model"
-                       Style="{StaticResource InputLabel}"/>
-
-                            <TextBox Name="txtModelModifica"
-                         Style="{StaticResource Input}"
-                         Margin="0,0,0,22"/>
-
-                            <!-- AN -->
-
-                            <Label Content="An fabricație"
-                       Style="{StaticResource InputLabel}"/>
-
-                            <TextBox Name="txtAnModifica"
-                         Style="{StaticResource Input}"
-                         Margin="0,0,0,22"/>
-
-                            <!-- PRET -->
-
-                            <Label Content="Preț"
-                       Style="{StaticResource InputLabel}"/>
-
-                            <TextBox Name="txtPretModifica"
-                         Style="{StaticResource Input}"
-                         Margin="0,0,0,22"/>
-
-                            <!-- DATEPICKER -->
-
-                            <Label Content="Data tranzacției"
-                       Style="{StaticResource InputLabel}"/>
-
-                            <DatePicker Name="dpDataModifica"
-                            Height="42"
-                            Margin="0,0,0,22"/>
-
-                            <!-- LISTBOX -->
-
-                            <Label Content="Dotări"
-                       Style="{StaticResource InputLabel}"/>
-
-                            <ListBox Name="lstDotariModifica"
-                         Height="160"
-                         SelectionMode="Multiple"
-                         Background="#0F172A"
-                         Foreground="White"
-                         BorderBrush="#334155"
-                         Margin="0,0,0,24"/>
-
-                            <!-- BUTTON -->
-
-                            <Button Content="Actualizează tranzacția"
-                        Click="BtnActualizeaza_Click"
-                        Style="{StaticResource PrimaryButton}"/>
-
-                        </StackPanel>
-
-                    </Border>
-
-                </ScrollViewer>
-
-            </Grid>
-
-
-            <Grid Name="PaginaPersoane" Visibility="Collapsed">
-                <ScrollViewer Margin="30">
-                    <Border BorderBrush="#38BDF8"
-                            BorderThickness="1"
-                            CornerRadius="30"
-                            Padding="36"
-                            MaxWidth="980"
-                            Effect="{StaticResource CardShadow}"
-                            HorizontalAlignment="Left">
-                        <Border.Background>
-                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                <GradientStop Color="#172033" Offset="0"/>
-                                <GradientStop Color="#0F172A" Offset="0.55"/>
-                                <GradientStop Color="#1E1B4B" Offset="1"/>
-                            </LinearGradientBrush>
-                        </Border.Background>
-                        <StackPanel>
-                            <TextBlock Text="Gestionare persoane"
-                                       FontSize="32"
-                                       FontWeight="Bold"
-                                       Foreground="{StaticResource TextMain}"/>
-
-                            <TextBlock Text="A doua entitate din aplicație: Persoana. Interfața permite operații CRUD și folosește Binding pentru formular și tabel."
-                                       FontSize="14"
-                                       Foreground="{StaticResource TextMuted}"
-                                       Margin="0,7,0,24"/>
-
-                            <Border Background="#0B1220" BorderBrush="#273449" BorderThickness="1" CornerRadius="22" Padding="20" Margin="0,0,0,22">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition Width="18"/>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition Width="18"/>
-                                        <ColumnDefinition/>
-                                    </Grid.ColumnDefinitions>
-
-                                    <StackPanel>
-                                        <Label Content="Nume persoană"
-                                               Style="{StaticResource InputLabel}"/>
-                                        <TextBox Style="{StaticResource Input}"
-                                                 Text="{Binding PersoanaCurenta.Nume, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                                    </StackPanel>
-
-                                    <StackPanel Grid.Column="2">
-                                        <Label Content="Telefon"
-                                               Style="{StaticResource InputLabel}"/>
-                                        <TextBox Style="{StaticResource Input}"
-                                                 Text="{Binding PersoanaCurenta.Telefon, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                                    </StackPanel>
-
-                                    <StackPanel Grid.Column="4">
-                                        <Label Content="Rol"
-                                               Style="{StaticResource InputLabel}"/>
-                                        <ComboBox Style="{StaticResource Combo}"
-                                                  SelectedValue="{Binding PersoanaCurenta.Rol, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                  SelectedValuePath="Content"
-                                                  IsEditable="False">
-                                            <ComboBoxItem Content="Client"/>
-                                            <ComboBoxItem Content="Vânzător"/>
-                                            <ComboBoxItem Content="Cumpărător"/>
-                                        </ComboBox>
-                                    </StackPanel>
-                                </Grid>
-                            </Border>
-
-                            <WrapPanel Margin="0,0,0,20">
-                                <Button Content="Nou"
-                                        Click="BtnPersoanaNoua_Click"
-                                        Style="{StaticResource SecondaryButton}"
-                                        Margin="0,0,10,0"/>
-                                <Button Content="Adaugă"
-                                        Click="BtnPersoanaAdauga_Click"
-                                        Style="{StaticResource PrimaryButton}"
-                                        Margin="0,0,10,0"/>
-                                <Button Content="Actualizează"
-                                        Click="BtnPersoanaActualizeaza_Click"
-                                        Style="{StaticResource SecondaryButton}"
-                                        Margin="0,0,10,0"/>
-                                <Button Content="Șterge"
-                                        Click="BtnPersoanaSterge_Click"
-                                        Style="{StaticResource SecondaryButton}"/>
-                            </WrapPanel>
-
-                            
-
-                            <DataGrid Name="dgPersoane"
-                                      ItemsSource="{Binding Persoane}"
-                                      SelectedItem="{Binding PersoanaSelectata, Mode=TwoWay}"
-                                      AutoGenerateColumns="False"
-                                      Height="330"
-                                      Background="#0B1220"
-                                      Foreground="#F8FAFC"
-                                      RowBackground="#0F172A"
-                                      AlternatingRowBackground="#111827"
-                                      BorderBrush="#334155"
-                                      BorderThickness="1"
-                                      GridLinesVisibility="Horizontal"
-                                      HorizontalGridLinesBrush="#1E293B"
-                                      CanUserAddRows="False"
-                                      HeadersVisibility="Column"
-                                      RowHeight="42"
-                                      FontSize="14">
-                                <DataGrid.ColumnHeaderStyle>
-                                    <Style TargetType="DataGridColumnHeader">
-                                        <Setter Property="Foreground" Value="#020617"/>
-                                        <Setter Property="Background" Value="#7DD3FC"/>
-                                        <Setter Property="FontWeight" Value="Bold"/>
-                                        <Setter Property="Height" Value="42"/>
-                                    </Style>
-                                </DataGrid.ColumnHeaderStyle>
-                                <DataGrid.CellStyle>
-                                    <Style TargetType="DataGridCell">
-                                        <Setter Property="Foreground" Value="#F8FAFC"/>
-                                        <Setter Property="Background" Value="Transparent"/>
-                                        <Setter Property="Padding" Value="10,0"/>
-                                    </Style>
-                                </DataGrid.CellStyle>
-                                <DataGrid.Columns>
-                                    <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="70"/>
-                                    <DataGridTextColumn Header="Nume" Binding="{Binding Nume}" Width="*"/>
-                                    <DataGridTextColumn Header="Telefon" Binding="{Binding Telefon}" Width="160"/>
-                                    <DataGridTextColumn Header="Rol" Binding="{Binding Rol}" Width="150"/>
-                                </DataGrid.Columns>
-                            </DataGrid>
+                            <Button Content="Actualizează tranzacția" Click="BtnActualizeaza_Click" Style="{StaticResource PrimaryButton}"/>
                         </StackPanel>
                     </Border>
                 </ScrollViewer>
             </Grid>
+
+
 
         </Grid>
     </Grid>

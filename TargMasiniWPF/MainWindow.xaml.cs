@@ -16,6 +16,8 @@ namespace TargMasiniWPF
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
         private readonly IStocareData _admin;
+        private Tranzactie? tranzactieCurentaModificata = null;
+
         public ObservableCollection<Persoana> Persoane { get; } = new ObservableCollection<Persoana>();
 
         private Persoana persoanaCurenta = new Persoana();
@@ -66,7 +68,6 @@ namespace TargMasiniWPF
         private const int AN_MINIM = 1900;
         private const decimal PRET_MINIM = 1;
 
-
         private readonly Brush culoareNormala = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#94A3B8"));
         private readonly Brush culoareEroare = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF5370"));
 
@@ -84,7 +85,7 @@ namespace TargMasiniWPF
             IncarcaCulori();
             ResetFormular();
             IncarcaTranzactii();
-            IncarcaPersoane();
+            PopuleazaDotariModifica(); // populăm lista de dotări o dată la pornire
         }
 
         private void IncarcaCulori()
@@ -105,16 +106,12 @@ namespace TargMasiniWPF
             cboCuloare.SelectedIndex = 0;
         }
 
-        private void IncarcaTranzactiiPentruModificare()
+        // ==================== PAGINA MODIFICĂ ====================
+
+        private void PopuleazaDotariModifica()
         {
-            List<Tranzactie> lista = _admin.GetTranzactii();
-
-            cboTranzactiiModifica.ItemsSource = null;
-            cboTranzactiiModifica.DisplayMemberPath = "DescriereScurta";
-            cboTranzactiiModifica.ItemsSource = lista;
-
+            // Lista de dotări disponibile pentru modificare (aceleași ca în ListBox-ul din adăugare)
             lstDotariModifica.Items.Clear();
-
             lstDotariModifica.Items.Add("Aer condiționat");
             lstDotariModifica.Items.Add("Navigație GPS");
             lstDotariModifica.Items.Add("Cutie automată");
@@ -123,10 +120,50 @@ namespace TargMasiniWPF
             lstDotariModifica.Items.Add("Cameră marșarier");
         }
 
-        private void cboTranzactiiModifica_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void NavModifica_Click(object sender, RoutedEventArgs e)
         {
-            if (cboTranzactiiModifica.SelectedItem is not Tranzactie t)
+            ArataPagina(PaginaModifica);
+            // Curăță căutarea și selecția anterioară
+            txtCautaModifica.Clear();
+            lstRezultateModifica.ItemsSource = null;
+            tranzactieCurentaModificata = null;
+            // Asigură că lista de dotări este populată
+            PopuleazaDotariModifica();
+        }
+
+        private void BtnCautaTranzactiiModifica_Click(object sender, RoutedEventArgs e)
+        {
+            string criteriu = txtCautaModifica.Text.Trim();
+            if (string.IsNullOrWhiteSpace(criteriu))
+            {
+                MessageBox.Show("Introduceți un criteriu de căutare (model mașină sau nume cumpărător).",
+                                "Atenție", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
+            }
+
+            List<Tranzactie> toate = _admin.GetTranzactii();
+            List<Tranzactie> rezultate = toate.FindAll(t =>
+                (t.Masina?.Model?.IndexOf(criteriu, StringComparison.OrdinalIgnoreCase) >= 0) ||
+                (t.Cumparator?.Nume?.IndexOf(criteriu, StringComparison.OrdinalIgnoreCase) >= 0)
+            );
+
+            if (rezultate.Count == 0)
+            {
+                MessageBox.Show("Nu s-a găsit nicio tranzacție pentru criteriul specificat.",
+                                "Informație", MessageBoxButton.OK, MessageBoxImage.Information);
+                lstRezultateModifica.ItemsSource = null;
+            }
+            else
+            {
+                lstRezultateModifica.ItemsSource = rezultate;
+            }
+        }
+
+        private void lstRezultateModifica_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (lstRezultateModifica.SelectedItem is not Tranzactie t) return;
+
+            tranzactieCurentaModificata = t;
 
             txtVanzatorModifica.Text = t.Vanzator?.Nume ?? string.Empty;
             txtCumparatorModifica.Text = t.Cumparator?.Nume ?? string.Empty;
@@ -135,15 +172,15 @@ namespace TargMasiniWPF
             txtAnModifica.Text = t.Masina?.AnFabricatie.ToString() ?? string.Empty;
             txtPretModifica.Text = t.Pret.ToString();
             dpDataModifica.SelectedDate = t.DataTranzactie;
-
             SeteazaDotariSelectate(t.Masina?.Optiuni ?? OptiuniMasina.Niciuna);
         }
 
         private void BtnActualizeaza_Click(object sender, RoutedEventArgs e)
         {
-            if (cboTranzactiiModifica.SelectedItem is not Tranzactie t)
+            if (tranzactieCurentaModificata == null)
             {
-                MessageBox.Show("Selectați o tranzacție pentru actualizare.", "Validare", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Selectați o tranzacție din lista de rezultate pentru actualizare.",
+                                "Validare", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -152,25 +189,28 @@ namespace TargMasiniWPF
                 string.IsNullOrWhiteSpace(txtFirmaModifica.Text) ||
                 string.IsNullOrWhiteSpace(txtModelModifica.Text))
             {
-                MessageBox.Show("Completați vânzătorul, cumpărătorul, marca și modelul mașinii.", "Validare", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Completați vânzătorul, cumpărătorul, marca și modelul mașinii.",
+                                "Validare", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             if (!int.TryParse(txtAnModifica.Text, out int an) || an < AN_MINIM || an > DateTime.Now.Year)
             {
-                MessageBox.Show("Introduceți un an de fabricație valid.", "Validare", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Introduceți un an de fabricație valid.",
+                                "Validare", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             if (!decimal.TryParse(txtPretModifica.Text, out decimal pret) || pret < PRET_MINIM)
             {
-                MessageBox.Show("Introduceți un preț valid.", "Validare", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Introduceți un preț valid.",
+                                "Validare", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             Tranzactie tranzactieActualizata = new Tranzactie
             {
-                Id = t.Id,
+                Id = tranzactieCurentaModificata.Id,
                 Vanzator = new Persoana(txtVanzatorModifica.Text.Trim()),
                 Cumparator = new Persoana(txtCumparatorModifica.Text.Trim()),
                 Masina = new Masina
@@ -178,8 +218,8 @@ namespace TargMasiniWPF
                     NumeFirma = txtFirmaModifica.Text.Trim(),
                     Model = txtModelModifica.Text.Trim(),
                     AnFabricatie = an,
-                    Culoare = t.Masina?.Culoare ?? CuloareMasina.Alb,
-                    Combustibil = t.Masina?.Combustibil ?? "Benzină",
+                    Culoare = tranzactieCurentaModificata.Masina?.Culoare ?? CuloareMasina.Alb,
+                    Combustibil = tranzactieCurentaModificata.Masina?.Combustibil ?? "Benzină",
                     Optiuni = ColecteazaOptiuniModifica()
                 },
                 Pret = pret,
@@ -190,7 +230,8 @@ namespace TargMasiniWPF
 
             if (!actualizat)
             {
-                MessageBox.Show("Tranzacția nu a fost găsită în fișier și nu a putut fi actualizată.", "Eroare", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Tranzacția nu a fost găsită în fișier și nu a putut fi actualizată.",
+                                "Eroare", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
@@ -201,8 +242,21 @@ namespace TargMasiniWPF
                 MessageBoxImage.Information);
 
             IncarcaTranzactii();
-            IncarcaTranzactiiPentruModificare();
+            tranzactieCurentaModificata = null;
+            txtCautaModifica.Clear();
+            lstRezultateModifica.ItemsSource = null;
+            // Resetează câmpurile de editare
+            txtVanzatorModifica.Clear();
+            txtCumparatorModifica.Clear();
+            txtFirmaModifica.Clear();
+            txtModelModifica.Clear();
+            txtAnModifica.Clear();
+            txtPretModifica.Clear();
+            dpDataModifica.SelectedDate = null;
+            SeteazaDotariSelectate(OptiuniMasina.Niciuna);
         }
+
+        // ==================== METODE AJUTĂTOARE PENTRU DOTĂRI ====================
 
         private void SeteazaDotariSelectate(OptiuniMasina optiuni)
         {
@@ -246,6 +300,8 @@ namespace TargMasiniWPF
             };
         }
 
+        // ==================== CELELALTE PAGINI ȘI METODE ====================
+
         private void NavLista_Click(object sender, RoutedEventArgs e)
         {
             ArataPagina(PaginaLista);
@@ -267,81 +323,14 @@ namespace TargMasiniWPF
             txtCautaMarca.Clear();
         }
 
-        private void NavModifica_Click(object sender, RoutedEventArgs e)
-        {
-            ArataPagina(PaginaModifica);
-            IncarcaTranzactiiPentruModificare();
-        }
-
-        private void NavPersoane_Click(object sender, RoutedEventArgs e)
-        {
-            ArataPagina(PaginaPersoane);
-            IncarcaPersoane();
-        }
-
         private void ArataPagina(Grid pagina)
         {
             PaginaLista.Visibility = Visibility.Collapsed;
             PaginaAdauga.Visibility = Visibility.Collapsed;
             PaginaCauta.Visibility = Visibility.Collapsed;
             PaginaModifica.Visibility = Visibility.Collapsed;
-            PaginaPersoane.Visibility = Visibility.Collapsed;
 
             pagina.Visibility = Visibility.Visible;
-        }
-
-        private void IncarcaPersoane()
-        {
-            Persoane.Clear();
-            foreach (Persoana persoana in _admin.GetPersoane())
-            {
-                Persoane.Add(persoana);
-            }
-        }
-
-        private void BtnPersoanaNoua_Click(object sender, RoutedEventArgs e)
-        {
-            PersoanaCurenta = new Persoana { Rol = "Client" };
-            PersoanaSelectata = null;
-            dgPersoane.SelectedItem = null;
-        }
-
-        private void BtnPersoanaAdauga_Click(object sender, RoutedEventArgs e)
-        {
-            if (string.IsNullOrWhiteSpace(PersoanaCurenta.Nume))
-            {
-                MessageBox.Show("Introduceți numele persoanei.", "Validare", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            _admin.AddPersoana(PersoanaCurenta);
-            PersoanaCurenta = new Persoana { Rol = "Client" };
-            IncarcaPersoane();
-        }
-
-        private void BtnPersoanaActualizeaza_Click(object sender, RoutedEventArgs e)
-        {
-            if (PersoanaCurenta.Id == 0)
-            {
-                MessageBox.Show("Selectați o persoană din tabel pentru actualizare.", "Validare", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            _admin.UpdatePersoana(PersoanaCurenta);
-            IncarcaPersoane();
-        }
-
-        private void BtnPersoanaSterge_Click(object sender, RoutedEventArgs e)
-        {
-            if (PersoanaCurenta.Id == 0)
-            {
-                MessageBox.Show("Selectați o persoană din tabel pentru ștergere.", "Validare", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            _admin.DeletePersoana(PersoanaCurenta.Id);
-            PersoanaCurenta = new Persoana { Rol = "Client" };
-            IncarcaPersoane();
         }
 
         private void BtnReincarca_Click(object sender, RoutedEventArgs e)
@@ -573,6 +562,7 @@ namespace TargMasiniWPF
 
             return "Benzină";
         }
+
         private OptiuniMasina ColecteazaOptiuni()
         {
             OptiuniMasina optiuni = OptiuniMasina.Niciuna;
